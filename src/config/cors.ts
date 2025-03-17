@@ -1,6 +1,6 @@
 import { CorsOptions } from "cors"
 
-const whitelist = [process.env.SWAGGER_URL, process.env.FRONTEND_URL];
+const whitelist = [process.env.SWAGGER_URL, process.env.FRONTEND_URL, process.env.BACKEND_URL];
 
 export const corsOptions: CorsOptions = {
     origin: function (origin, callback) {

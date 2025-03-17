@@ -13,6 +13,7 @@ export const verifyUserExists = async (req: Request, res: Response, next: NextFu
     try {
         const { email }: Pick<IUser, 'email'> = req.body;
         const user = await User.findOne({ email });
+     
 
         if (!user) {
             res.status(404).send('No se encontró al usuario con el email registrado!');
@@ -22,6 +23,6 @@ export const verifyUserExists = async (req: Request, res: Response, next: NextFu
         req.user = user;
         next();
     } catch (error) {
-        res.status(500).send('Hubo un error!');
+        res.status(500).send('Hubo un error de verificacion usuario!');
     }
 }

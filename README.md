@@ -8,6 +8,11 @@ TaskMate es una aplicación para la gestión de tareas y proyectos, que permite 
 ```
 npm i
 ```
+### Para envios de token
+
+```
+Token enviado por .env y VerifyToken
+```
 ### Para inicializar el Servidor:
 
 ```

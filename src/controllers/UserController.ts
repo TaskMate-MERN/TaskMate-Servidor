@@ -34,9 +34,11 @@ export default class UserController {
 
     static login = async (req: Request, res: Response): Promise<void> => {
         try {
+           
             const { user: { id, verified, email, password: userPassword } } = req;
             const { password }: IUser = req.body;
-
+            console.log("Contenido de req.user antes de login:", req.user);
+            console.log("Email recibido en el middleware verifyUserExists:", email);
             //Verifies that the user is verified
 
             if (!verified) {
@@ -62,15 +64,19 @@ export default class UserController {
             }
 
             const jwt = generateJWT({
-                id
+                id 
             });
             res.send(jwt);
 
         } catch (error) {
-            res.status(500).send('Hubo un error!');
+            
+            console.error("Error en login:", error);
+            res.status(500).send('Hubo un error del login!');
         }
+    
     }
 
+    
     static requestAuthToken = async (req: Request, res: Response): Promise<void> => {
         try {
             const { user: { id, verified, email } } = req;
@@ -123,7 +129,7 @@ export default class UserController {
                 res.status(409).send('El token no es válido');
                 return;
             }
-
+ 
             const { user } = req;
             user.verified = true;
             await Promise.allSettled([user.save(), authToken.deleteOne()]);
