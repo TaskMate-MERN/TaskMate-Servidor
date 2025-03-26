@@ -10,7 +10,7 @@ declare global{
         }
     }
 }
-
+ 
 export const verifyAuthTokenExists = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { token }: Pick<IToken, 'token'> = req.body;

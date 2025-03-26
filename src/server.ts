@@ -15,7 +15,7 @@ server.use(cors(corsOptions));
 server.use(express.json());
 
 //API Routes
-server.use('/api/user', userRoutes);
+server.use('/api/users', userRoutes);
 server.use('/api/project', projectRoutes);
 server.use('/api/task', taskRoutes);
 

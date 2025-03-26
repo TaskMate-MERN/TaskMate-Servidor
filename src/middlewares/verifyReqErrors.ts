@@ -10,4 +10,4 @@ export const verifyReqErrors = (req: Request, res: Response, next: NextFunction)
     }
 
     next();
-}
+} 

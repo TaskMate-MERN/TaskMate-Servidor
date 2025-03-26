@@ -21,7 +21,7 @@ export default class UserController {
                 token: generarAuthToken(),
                 type: TokenType['CONFIRM_ACCOUNT'],
                 user: id,
-            })
+            }) 
 
             const { token } = authToken;
 
@@ -36,41 +36,59 @@ export default class UserController {
         try {
             const { user: { id, verified, email, password: userPassword } } = req;
             const { password }: IUser = req.body;
-
-            //Verifies that the user is verified
-
+    
+            console.log("Contenido de req.user antes de login:", req.user);
+            console.log("Email recibido en el middleware verifyUserExists:", email);
+    
+            // Verifica que el usuario esté confirmado
             if (!verified) {
                 const authToken = new Token({
                     token: generarAuthToken(),
                     type: TokenType['CONFIRM_ACCOUNT'],
                     user: id,
                 });
-
+    
                 const { token } = authToken;
                 await Promise.allSettled([authToken.save(), AuthEmail.sendAuthToken(email, token)]);
-                res.status(409).send('Tu cuenta no está confirmada! Te hemos enviado un email para confirmar tu cuenta!');
+    
+                res.status(409).json({
+                    success: false,
+                    message: 'Tu cuenta no está confirmada. Te hemos enviado un email para confirmar tu cuenta.',
+                    code: 'USER_NOT_CONFIRMED',
+                });
                 return;
             }
-
-            //Verifies that the password is correct
-
+    
+            // Verifica que la contraseña sea correcta
             const compareResult = await comparePassword(password, userPassword);
-
+    
             if (!compareResult) {
-                res.status(401).send('El password es incorrecto!');
+                res.status(401).json({
+                    success: false,
+                    message: 'Credenciales incorrectas.',
+                    code: 'INVALID_CREDENTIALS',
+                });
                 return;
             }
-
-            const jwt = generateJWT({
-                id
+    
+            // Genera el JWT y responde con éxito
+            const jwt = generateJWT({ id });
+    
+            res.status(200).json({
+                success: true,
+                message: 'Login exitoso.',
+                token: jwt,
             });
-            res.send(jwt);
-
         } catch (error) {
-            res.status(500).send('Hubo un error!');
+            console.error("Error en login:", error);
+            res.status(500).json({
+                success: false,
+                message: 'Hubo un error en el servidor. Por favor, inténtalo de nuevo más tarde.',
+                code: 'SERVER_ERROR',
+            });
         }
-    }
-
+    };
+    
     static requestAuthToken = async (req: Request, res: Response): Promise<void> => {
         try {
             const { user: { id, verified, email } } = req;
@@ -123,7 +141,7 @@ export default class UserController {
                 res.status(409).send('El token no es válido');
                 return;
             }
-
+ 
             const { user } = req;
             user.verified = true;
             await Promise.allSettled([user.save(), authToken.deleteOne()]);

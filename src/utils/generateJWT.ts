@@ -5,9 +5,12 @@ type PayloadUser = {
 }
 
 
-export const generateJWT = (payload: PayloadUser): string => {
-    const token = jwt.sign(payload, process.env.JWT_KEY!, {
-        expiresIn: '1d',
-    });
-    return token;
-}
+
+
+
+export const generateJWT = (payload: object): string => {
+    if (!process.env.JWT_SECRET) {
+        throw new Error("JWT_SECRET no está definido en el entorno.");
+    }
+    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
+};
